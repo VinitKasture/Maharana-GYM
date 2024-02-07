@@ -58,11 +58,11 @@ const validateAdminAndSuperAdmin = (req, res, next) => {
         accessToken,
         process.env.ACCESS_TOKEN_SECRET
       );
-      if (validToken.role !== "SuperAdmin" || validToken.role !== "Admin") {
-        throw new Error("You are not authorized to access this data!");
-      } else {
+      if (validToken.role === "SuperAdmin" || validToken.role === "Admin") {
         req.user = validToken;
         return next();
+      } else {
+        throw new Error("You are not authorized to access this data!");
       }
     } catch (error) {
       next(error);
