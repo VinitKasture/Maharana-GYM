@@ -14,7 +14,7 @@ const getWorkoutTypes = async function (req, res) {
 };
 const getWorkoutByType = async (req, res) => {
   try {
-    const { workoutType, userId } = req.query;
+    const { workoutType, userId } = req.body;
 
     const user = await User.findById(userId);
 
@@ -25,7 +25,6 @@ const getWorkoutByType = async (req, res) => {
     const workouts = user.workouts;
     const workoutIds = workouts.map((workout) => workout.workoutId);
 
-    // Fetch assigned workouts
     const assignedWorkouts = await Promise.all(
       workouts.map(async (workout) => {
         try {
@@ -33,7 +32,7 @@ const getWorkoutByType = async (req, res) => {
           if (exercise && exercise.type === workoutType) {
             return exercise;
           } else {
-            return null; // Returning null for exercises that don't match criteria
+            return null;
           }
         } catch (error) {
           res.status(500).json({ error });
@@ -45,7 +44,11 @@ const getWorkoutByType = async (req, res) => {
       (exercise) => exercise !== null
     );
 
-    // Fetch other workouts of the same type not included in assignedWorkouts
+    if (req.user.role == "Client") {
+      res.status(200).json({ assignedWorkouts: cleanedAssignedWorkouts });
+      return;
+    }
+
     const otherExercises = await Exercise.find({
       type: workoutType,
       _id: { $nin: workoutIds },

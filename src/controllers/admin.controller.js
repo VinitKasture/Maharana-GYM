@@ -32,7 +32,6 @@ const addExercise = async function (req, res) {
         type: type,
       });
       const result = await newExercise.save();
-      console.log(result);
     });
     res.status(200).json({ message: "Exercises Added" });
   } catch (error) {

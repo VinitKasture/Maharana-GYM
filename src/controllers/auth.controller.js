@@ -25,10 +25,10 @@ const login = async function (req, res) {
       } else {
         const token = createToken(
           {
+            _id: user._id,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            gender: user.gender,
             role: user.role,
           },
           "30d"
@@ -61,27 +61,27 @@ const signup = async function (req, res) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      const newUser = new User({
+      const newUser = await new User({
         firstName: firstName,
         lastName: lastName,
         email: email,
         password: hashedPassword,
         gender: gender,
         role: role,
-      });
+      }).save();
 
       const token = createToken(
         {
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          gender: gender,
-          role: role,
+          _id: newUser._id,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          email: newUser.email,
+          gender: newUser.gender,
+          role: newUser.role,
         },
         "30d"
       );
 
-      await newUser.save();
       return res.status(200).json({
         token,
         user: { name: firstName + " " + lastName, email: email },
@@ -108,7 +108,6 @@ const changePassword = async function (req, res) {
 
     res.status(200).json({ message: "Password changed successfully!" });
   } catch (error) {
-    console.error("Error changing password:", error.message);
     res
       .status(400)
       .json({ message: "Unable to change password. Please try again." });

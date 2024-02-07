@@ -7,9 +7,10 @@ const {
   getWorkoutTypes,
   getWorkoutByType,
 } = require("../controllers/workout.controller");
+const { validateToken } = require("../middleware/jwt");
 
 router.get("/workout/get-all-workout", getAllWorkout);
 router.get("/workout/get-workout-types", getWorkoutTypes);
-router.get("/workout/get-workout-by-type", getWorkoutByType);
+router.post("/workout/get-workout-by-type", validateToken, getWorkoutByType);
 
 module.exports = router;
