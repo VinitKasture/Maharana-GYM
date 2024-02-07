@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const Exercise = require("../models/Exercise");
 
-const removeWorkoutAssignment = async (req, res) => {
+const removeWorkoutAssignment = async (req, res, next) => {
   try {
     const { userId, workoutId } = req.body;
 
@@ -17,16 +17,16 @@ const removeWorkoutAssignment = async (req, res) => {
 
     res.status(200).json({ result });
   } catch (error) {
-    res.status(400).json({ error });
+    next(error);
   }
 };
 
-const assignWorkoutToUser = async (req, res) => {
+const assignWorkoutToUser = async (req, res, next) => {
   try {
     const { userId, workoutId } = req.body;
     const workout = await Exercise.findById(workoutId);
     if (!workout) {
-      res.status(400).json({ error: "Workout not found!" });
+      throw new Error("Workout not found!");
     }
 
     await User.findOneAndUpdate(
@@ -42,7 +42,7 @@ const assignWorkoutToUser = async (req, res) => {
 
     res.status(200).json({ result: workout });
   } catch (error) {
-    res.status(400).json({ error });
+    next(error);
   }
 };
 

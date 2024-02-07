@@ -2,7 +2,7 @@
 const Exercise = require("../models/Exercise");
 const User = require("../models/User");
 
-const addExercise = async function (req, res) {
+const addExercise = async function (req, res, next) {
   try {
     const type = "Chest";
     const exercise = [
@@ -35,16 +35,16 @@ const addExercise = async function (req, res) {
     });
     res.status(200).json({ message: "Exercises Added" });
   } catch (error) {
-    res.status(400).json({ message: error });
+    next(error);
   }
 };
 
-const getAllUsers = async function (req, res) {
+const getAllUsers = async function (req, res, next) {
   try {
     const result = await User.find({ role: { $ne: "SuperAdmin" } });
     res.status(200).json({ result });
   } catch (error) {
-    res.status(400).json({ message: error });
+    next(error);
   }
 };
 

@@ -19,12 +19,60 @@ const validateToken = (req, res, next) => {
         process.env.ACCESS_TOKEN_SECRET
       );
       req.user = validToken;
-      // console.log(req.accessToken);
       return next();
     } catch (error) {
-      res.status(403).json({ error: "Session Expired, Please login!" });
+      next(error);
     }
   }
 };
 
-module.exports = { createToken, validateToken };
+const validateSuperAdmin = (req, res, next) => {
+  const accessToken = req.headers.authorization.split(" ")[1];
+  if (!accessToken) {
+    res.status(403).json({ message: "Please provide an token!" });
+  } else {
+    try {
+      const validToken = jwt.verify(
+        accessToken,
+        process.env.ACCESS_TOKEN_SECRET
+      );
+      if (validToken.role !== "SuperAdmin") {
+        throw new Error("You are not authorized to access this data!");
+      } else {
+        req.user = validToken;
+        return next();
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+};
+
+const validateAdminAndSuperAdmin = (req, res, next) => {
+  const accessToken = req.headers.authorization.split(" ")[1];
+  if (!accessToken) {
+    res.status(403).json({ message: "Please provide an token!" });
+  } else {
+    try {
+      const validToken = jwt.verify(
+        accessToken,
+        process.env.ACCESS_TOKEN_SECRET
+      );
+      if (validToken.role !== "SuperAdmin" || validToken.role !== "Admin") {
+        throw new Error("You are not authorized to access this data!");
+      } else {
+        req.user = validToken;
+        return next();
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+};
+
+module.exports = {
+  createToken,
+  validateToken,
+  validateSuperAdmin,
+  validateAdminAndSuperAdmin,
+};

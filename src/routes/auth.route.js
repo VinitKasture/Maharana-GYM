@@ -15,8 +15,8 @@ const { validateToken } = require("../middleware/jwt");
 
 router.post("/auth/login", login);
 router.post("/auth/signup", signup);
-router.post("/auth/forgot-password/:token", validateToken, changePassword);
-router.post("/auth/verify-email", validateToken, verifyEmail);
-router.post("/auth/verify-otp", validateToken, verifyOtp);
+// router.post("/auth/forgot-password/:token", validateToken, changePassword);
+// router.post("/auth/verify-email", validateToken, verifyEmail);
+// router.post("/auth/verify-otp", validateToken, verifyOtp);
 
 module.exports = router;

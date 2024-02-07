@@ -9,9 +9,10 @@ const getWorkoutTypes = async function (req, res) {
     const result = await Exercise.distinct("type");
     res.status(200).json({ result });
   } catch (error) {
-    res.status(400).json({ message: error });
+    next(error);
   }
 };
+
 const getWorkoutByType = async (req, res) => {
   try {
     const { workoutType, userId } = req.body;
@@ -19,7 +20,7 @@ const getWorkoutByType = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "User not found!" });
+      throw new Error("User not found!");
     }
 
     const workouts = user.workouts;
@@ -58,7 +59,7 @@ const getWorkoutByType = async (req, res) => {
       .status(200)
       .json({ assignedWorkouts: cleanedAssignedWorkouts, otherExercises });
   } catch (error) {
-    res.status(500).json({ error });
+    next(error);
   }
 };
 
@@ -81,7 +82,7 @@ const getAllWorkout = async function (req, res) {
 
     res.status(200).json({ result });
   } catch (error) {
-    res.status(400).json({ message: error });
+    next(error);
   }
 };
 

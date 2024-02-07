@@ -9,22 +9,10 @@ const authRoutes = require("./src/routes/auth.route");
 const adminRoutes = require("./src/routes/admin.route");
 const workoutRoutes = require("./src/routes/workout.route");
 const adminWorkoutRoutes = require("./src/routes/admin.workout.route");
+const { errorMiddleware } = require("./src/middleware/error.middleware");
 
 const app = express();
 app.use(cors());
-
-Promise.all([
-  (async () => {
-    try {
-      await mongoose.connect(process.env.MONGODB_URL);
-      console.log("=========== Connected to Backend Database ============");
-    } catch (err) {
-      console.log("============ Error Connecting To Database ============ ");
-      console.error(err);
-      throw err;
-    }
-  })(),
-]);
 
 app.set("port", process.env.PORT || 4001);
 
@@ -38,6 +26,21 @@ app.use(adminWorkoutRoutes);
 
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
+
+app.use(errorMiddleware);
+
+Promise.all([
+  (async () => {
+    try {
+      await mongoose.connect(process.env.MONGODB_URL);
+      console.log("=========== Connected to Backend Database ============");
+    } catch (err) {
+      console.log("============ Error Connecting To Database ============ ");
+      console.error(err);
+      throw err;
+    }
+  })(),
+]);
 
 app.listen(app.get("port"), () => {
   console.log("Listening....");

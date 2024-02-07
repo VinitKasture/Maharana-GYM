@@ -9,19 +9,19 @@ const { createToken, validateToken } = require("../middleware/jwt");
 // Config
 const { sendEmail } = require("../config/email");
 
-const login = async function (req, res) {
+const login = async function (req, res, next) {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
 
     if (!user) {
-      res.status(400).json({ error: "Email is not registered!" });
+      throw new Error("Email is not registered!");
     } else {
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
-        res.status(403).json({ error: "Password is incorrect!" });
+        throw new Error("Password is incorrect!");
       } else {
         const token = createToken(
           {
@@ -44,7 +44,7 @@ const login = async function (req, res) {
       }
     }
   } catch (error) {
-    res.status(400).json({ message: error });
+    next(error);
   }
 };
 
@@ -54,9 +54,7 @@ const signup = async function (req, res) {
     const emailExists = await User.findOne({ email });
 
     if (emailExists) {
-      return res
-        .status(400)
-        .json({ error: "This email is already registered" });
+      throw new Error("This email is already registered");
     } else {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
@@ -89,7 +87,7 @@ const signup = async function (req, res) {
       });
     }
   } catch (error) {
-    res.status(400).json({ message: error });
+    next(error);
   }
 };
 
