@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const Exercise = require("../models/Exercise");
 const User = require("../models/User");
 
-const getWorkoutTypes = async function (req, res) {
+const getWorkoutTypes = async function (req, res, next) {
   try {
     const result = await Exercise.distinct("type");
     res.status(200).json({ result });
@@ -13,7 +13,7 @@ const getWorkoutTypes = async function (req, res) {
   }
 };
 
-const getWorkoutByType = async (req, res) => {
+const getWorkoutByType = async (req, res, next) => {
   try {
     const { workoutType, userId } = req.body;
 
@@ -63,7 +63,7 @@ const getWorkoutByType = async (req, res) => {
   }
 };
 
-const getAllWorkout = async function (req, res) {
+const getAllWorkout = async function (req, res, next) {
   try {
     const query = [
       {

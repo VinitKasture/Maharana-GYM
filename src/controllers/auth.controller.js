@@ -9,6 +9,26 @@ const { createToken, validateToken } = require("../middleware/jwt");
 // Config
 const { sendEmail } = require("../config/email");
 
+const getUserProfile = async function (req, res, next) {
+  try {
+    const user = await User.findOne(
+      { _id: req.user._id },
+      {
+        _id: 1,
+        firstName: 1,
+        lastName: 1,
+        email: 1,
+        address: 1,
+        role: 1,
+        gender: 1,
+      }
+    );
+    res.status(200).json({ data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const login = async function (req, res, next) {
   try {
     const { email, password } = req.body;
@@ -48,9 +68,10 @@ const login = async function (req, res, next) {
   }
 };
 
-const signup = async function (req, res) {
+const signup = async function (req, res, next) {
   try {
-    const { firstName, lastName, email, password, gender, role } = req.body;
+    const { firstName, lastName, email, password, gender, role, address } =
+      req.body;
     const emailExists = await User.findOne({ email });
 
     if (emailExists) {
@@ -66,6 +87,7 @@ const signup = async function (req, res) {
         password: hashedPassword,
         gender: gender,
         role: role,
+        address: address,
       }).save();
 
       const token = createToken(
@@ -151,4 +173,11 @@ const verifyOtp = async function (req, res) {
   }
 };
 
-module.exports = { login, signup, changePassword, verifyEmail, verifyOtp };
+module.exports = {
+  login,
+  signup,
+  changePassword,
+  verifyEmail,
+  verifyOtp,
+  getUserProfile,
+};
