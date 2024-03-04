@@ -41,6 +41,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    number: {
+      type: String,
+      required: true,
+    },
     address: {
       type: String,
       required: true,
@@ -70,9 +74,10 @@ const UserSchema = new mongoose.Schema(
         default: Date.now(),
       },
     },
-    otp: {
-      type: Number,
-      required: false,
+    profilePic: {
+      type: String,
+      required: true,
+      default: "",
     },
     workouts: [WorkoutSchema],
   },

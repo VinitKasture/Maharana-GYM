@@ -18,12 +18,52 @@ const getUserProfile = async function (req, res, next) {
         firstName: 1,
         lastName: 1,
         email: 1,
+        number: 1,
         address: 1,
         role: 1,
         gender: 1,
+        profilePic: 1,
       }
     );
     res.status(200).json({ data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateUserProfile = async function (req, res, next) {
+  try {
+    const { userDetails } = req.body;
+    const email = userDetails.email.toLowerCase();
+
+    const user = await User.findByIdAndUpdate(
+      { _id: req.user._id },
+      {
+        firstName: userDetails.firstName,
+        lastName: userDetails.lastName,
+        email: email,
+        number: userDetails.number,
+        address: userDetails.address,
+        gender: userDetails.gender,
+      }
+    );
+    res.status(200).json({ data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateUserProfilePic = async function (req, res, next) {
+  try {
+    const profilePic = req.body;
+
+    console.log(profilePic);
+
+    const user = await User.findByIdAndUpdate(
+      { _id: req.user._id },
+      { profilePic: profilePic.profilePic }
+    );
+    res.status(200).json({ data: "Profile picture changed successfully!" });
   } catch (error) {
     next(error);
   }
@@ -70,8 +110,16 @@ const login = async function (req, res, next) {
 
 const signup = async function (req, res, next) {
   try {
-    const { firstName, lastName, email, password, gender, role, address } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      number,
+      gender,
+      role,
+      address,
+    } = req.body;
     const emailExists = await User.findOne({ email });
 
     if (emailExists) {
@@ -85,6 +133,7 @@ const signup = async function (req, res, next) {
         lastName: lastName,
         email: email,
         password: hashedPassword,
+        number: number,
         gender: gender,
         role: role,
         address: address,
@@ -180,4 +229,6 @@ module.exports = {
   verifyEmail,
   verifyOtp,
   getUserProfile,
+  updateUserProfile,
+  updateUserProfilePic,
 };
