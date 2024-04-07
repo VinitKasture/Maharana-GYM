@@ -11,6 +11,7 @@ const {
   getUserProfile,
   updateUserProfile,
   updateUserProfilePic,
+  getBmiDetails,
 } = require("../controllers/auth.controller");
 
 // Middlewares
@@ -25,5 +26,6 @@ router.post(
   validateToken,
   updateUserProfilePic
 );
+router.get("/auth/get-bmi-details", validateToken, getBmiDetails);
 
 module.exports = router;

@@ -1,27 +1,32 @@
 const mongoose = require("mongoose");
 
-// const WorkoutItemSchema = new mongoose.Schema({
-//   type: {
-//     type: String,
-//     required: true,
-//   },
-//   objectId: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "Exercise",
-//     required: true,
-//   },
-// });
-
-const WorkoutSchema = new mongoose.Schema(
-  {
-    workoutId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Exercise",
-      required: true,
-    },
+const WorkoutSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
   },
-  { _id: false }
-);
+  workoutId: {
+    type: String,
+    required: true,
+  },
+  exerciseType: {
+    type: String,
+    required: true,
+  },
+  start: {
+    type: String,
+    required: true,
+  },
+  end: {
+    type: String,
+    required: true,
+  },
+  allDay: {
+    type: Boolean,
+    default: true,
+    required: true,
+  },
+});
 
 const UserSchema = new mongoose.Schema(
   {
@@ -45,6 +50,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    clientId: {
+      type: String,
+      default: "N/A",
+    },
     address: {
       type: String,
       required: true,
@@ -57,21 +66,20 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    profession: {
+      type: String,
+      default: "N/A",
+    },
     isEmailVerified: {
       type: Boolean,
-      required: true,
       default: false,
     },
     membership: {
       from: {
         type: Date,
-        required: true,
-        default: Date.now(),
       },
       to: {
         type: Date,
-        required: true,
-        default: Date.now(),
       },
     },
     profilePic: {
@@ -79,6 +87,10 @@ const UserSchema = new mongoose.Schema(
       default: "",
     },
     workouts: [WorkoutSchema],
+    // bmiId: {
+    //   type: mongoose.Schema.ObjectId,
+    //   required: true,
+    // },
   },
   { timestamps: true }
 );

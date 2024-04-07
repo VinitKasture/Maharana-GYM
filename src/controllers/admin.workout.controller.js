@@ -1,16 +1,16 @@
 const User = require("../models/User");
 const Exercise = require("../models/Exercise");
+const moment = require("moment");
 
 const removeWorkoutAssignment = async (req, res, next) => {
   try {
-    const { userId, workoutId } = req.body;
+    const { userId, _id } = req.body;
 
-    const result = await Exercise.findById(workoutId);
-    await User.findOneAndUpdate(
+    const result = await User.findOneAndUpdate(
       { _id: userId },
       {
         $pull: {
-          workouts: { workoutId: workoutId },
+          workouts: { _id: _id },
         },
       }
     );
@@ -23,27 +23,55 @@ const removeWorkoutAssignment = async (req, res, next) => {
 
 const assignWorkoutToUser = async (req, res, next) => {
   try {
-    const { userId, workoutId } = req.body;
-    const workout = await Exercise.findById(workoutId);
-    if (!workout) {
-      throw new Error("Workout not found!");
-    }
+    const { userId, date, title, start, workoutId, selectedWorkoutType } =
+      req.body;
 
-    await User.findOneAndUpdate(
+    const rawDate = date.split("-");
+
+    const year = rawDate[0];
+    const month = rawDate[1];
+    const day = rawDate[2];
+
+    const updatedUser = await User.findByIdAndUpdate(
       { _id: userId },
       {
         $push: {
           workouts: {
+            title: title,
             workoutId: workoutId,
+            exerciseType: selectedWorkoutType,
+            start: moment(start).format(),
+            end: moment(start).format(),
           },
         },
-      }
+      },
+      { new: true }
     );
 
-    res.status(200).json({ result: workout });
+    res.status(200).json({ message: "Workout Assigned!" });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = { assignWorkoutToUser, removeWorkoutAssignment };
+const getUserWorkout = async (req, res, next) => {
+  try {
+    const { userId, startDate } = req.query;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error("User not found!");
+    }
+
+    const workouts = user.workouts;
+    res.status(200).json({ result: workouts });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  assignWorkoutToUser,
+  removeWorkoutAssignment,
+  getUserWorkout,
+};

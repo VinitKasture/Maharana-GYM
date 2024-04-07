@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 //Models
 const User = require("../models/User");
 const { createToken, validateToken } = require("../middleware/jwt");
+const Bmi = require("../models/Bmi");
 
 // Config
 const { sendEmail } = require("../config/email");
@@ -57,13 +58,21 @@ const updateUserProfilePic = async function (req, res, next) {
   try {
     const profilePic = req.body;
 
-    console.log(profilePic);
-
     const user = await User.findByIdAndUpdate(
       { _id: req.user._id },
       { profilePic: profilePic.profilePic }
     );
     res.status(200).json({ data: "Profile picture changed successfully!" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getBmiDetails = async function (req, res, next) {
+  try {
+    const bmi = await Bmi.findById({ _id: req.user.bmiId });
+
+    res.status(200).json({ data: bmi });
   } catch (error) {
     next(error);
   }
@@ -90,6 +99,7 @@ const login = async function (req, res, next) {
             lastName: user.lastName,
             email: user.email,
             role: user.role,
+            bmiId: user.bmiId,
           },
           "30d"
         );
@@ -119,6 +129,7 @@ const signup = async function (req, res, next) {
       gender,
       role,
       address,
+      membership,
     } = req.body;
     const emailExists = await User.findOne({ email });
 
@@ -128,33 +139,28 @@ const signup = async function (req, res, next) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      const newUser = await new User({
+      const newUser = new User({
         firstName: firstName,
         lastName: lastName,
         email: email,
         password: hashedPassword,
         number: number,
         gender: gender,
+        membership: {
+          from: membership.from,
+          to: membership.to,
+        },
         role: role,
         address: address,
-      }).save();
+      });
 
-      const token = createToken(
-        {
-          _id: newUser._id,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          email: newUser.email,
-          gender: newUser.gender,
-          role: newUser.role,
-        },
-        "30d"
-      );
+      await newUser.save();
+
+      const bmi = await new Bmi({ userId: newUser._id }).save();
 
       return res.status(200).json({
-        token,
         user: { name: firstName + " " + lastName, email: email },
-        message: "Signup Successfull!",
+        message: "Signup successfull, please login!",
       });
     }
   } catch (error) {
@@ -231,4 +237,5 @@ module.exports = {
   getUserProfile,
   updateUserProfile,
   updateUserProfilePic,
+  getBmiDetails,
 };
