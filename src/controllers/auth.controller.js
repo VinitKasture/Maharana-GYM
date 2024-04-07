@@ -70,7 +70,7 @@ const updateUserProfilePic = async function (req, res, next) {
 
 const getBmiDetails = async function (req, res, next) {
   try {
-    const bmi = await Bmi.findById({ _id: req.user.bmiId });
+    const bmi = await Bmi.findOne({ userId: req.user._id });
 
     res.status(200).json({ data: bmi });
   } catch (error) {
