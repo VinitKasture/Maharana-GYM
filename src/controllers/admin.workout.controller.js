@@ -23,14 +23,7 @@ const removeWorkoutAssignment = async (req, res, next) => {
 
 const assignWorkoutToUser = async (req, res, next) => {
   try {
-    const { userId, date, title, start, workoutId, selectedWorkoutType } =
-      req.body;
-
-    const rawDate = date.split("-");
-
-    const year = rawDate[0];
-    const month = rawDate[1];
-    const day = rawDate[2];
+    const { userId, date, title, workoutId, selectedWorkoutType } = req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
       { _id: userId },
@@ -40,8 +33,8 @@ const assignWorkoutToUser = async (req, res, next) => {
             title: title,
             workoutId: workoutId,
             exerciseType: selectedWorkoutType,
-            start: moment(start).format(),
-            end: moment(start).format(),
+            start: date,
+            end: date,
           },
         },
       },
