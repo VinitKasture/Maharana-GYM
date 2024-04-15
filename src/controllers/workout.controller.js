@@ -132,7 +132,7 @@ const updateWorkoutSets = async (req, res, next) => {
       }
     );
 
-    res.status(200).json({ user: user, message: "Reps updated!" });
+    res.status(200).json({ user: user, message: "Sets updated!" });
   } catch (error) {
     next(error);
   }
