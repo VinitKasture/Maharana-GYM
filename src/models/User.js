@@ -13,6 +13,13 @@ const WorkoutSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  data: {
+    type: {
+      reps: String,
+      sets: String,
+    },
+    required: false,
+  },
   start: {
     type: String,
     required: true,

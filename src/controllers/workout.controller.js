@@ -94,9 +94,55 @@ const getUserWorkout = async (req, res, next) => {
   }
 };
 
+const updateWorkoutReps = async (req, res, next) => {
+  try {
+    const { objectId, reps } = req.body;
+
+    const user = await User.findOneAndUpdate(
+      {
+        _id: req.user._id,
+        "workouts._id": objectId,
+      },
+      {
+        $set: {
+          "workouts.$.data.reps": `${reps}`,
+        },
+      }
+    );
+
+    res.status(200).json({ user: user, message: "Reps updated!" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateWorkoutSets = async (req, res, next) => {
+  try {
+    const { objectId, sets } = req.body;
+
+    const user = await User.findOneAndUpdate(
+      {
+        _id: req.user._id,
+        "workouts._id": objectId,
+      },
+      {
+        $set: {
+          "workouts.$.data.sets": `${sets}`,
+        },
+      }
+    );
+
+    res.status(200).json({ user: user, message: "Reps updated!" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllWorkout,
   getWorkoutTypes,
   getWorkoutByType,
   getUserWorkout,
+  updateWorkoutReps,
+  updateWorkoutSets,
 };
